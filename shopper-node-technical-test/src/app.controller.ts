@@ -7,10 +7,12 @@ import {
   Patch,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiParam } from '@nestjs/swagger';
 import { ConfirmDto, ListCustomerDto, UploadDto } from './app.dtos';
+import { Request } from 'express';
 
 @Controller()
 export class AppController {
@@ -18,8 +20,8 @@ export class AppController {
 
   @Post('upload')
   @HttpCode(200)
-  async uploadPhoto(@Body() body: UploadDto) {
-    return this.appService.uploadPhoto(body);
+  async uploadPhoto(@Body() body: UploadDto, @Req() request: Request) {
+    return this.appService.uploadPhoto(body, request);
   }
 
   @Patch('confirm')
@@ -33,10 +35,15 @@ export class AppController {
     description: 'code of customer',
     type: 'string',
   })
-  listCustomer(@Param() params: any, @Query() query: ListCustomerDto) {
+  listCustomer(
+    @Param() params: any,
+    @Query() query: ListCustomerDto,
+    @Req() request: Request,
+  ) {
     return this.appService.listCustomer(
       params.customer_code,
       query.measure_type,
+      request,
     );
   }
 }
