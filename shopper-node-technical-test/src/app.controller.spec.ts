@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { readFileSync, unlinkSync } from 'fs';
+import { existsSync, readFileSync, unlinkSync } from 'fs';
 import { ConfirmDto, UploadDto } from './app.dtos';
 import { Request } from 'express';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -21,15 +21,16 @@ describe('AppController', () => {
   let firstTest = true;
 
   beforeEach(async () => {
-    if (firstTest) {
+    const pathToTestDb = './src/database/db_test.sqlite';
+    if (firstTest && existsSync(pathToTestDb)) {
       // delete the test db if first test
-      unlinkSync('./src/database/db_test.sqlite');
+      unlinkSync(pathToTestDb);
     }
     const app: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
           type: 'sqlite',
-          database: './src/database/db_test.sqlite',
+          database: pathToTestDb,
           entities: [Measure],
           synchronize: true,
         }),
