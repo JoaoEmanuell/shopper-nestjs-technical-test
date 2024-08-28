@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:20-slim
 
 USER node
 
@@ -8,14 +8,12 @@ COPY --chown=node:node shopper-node-technical-test .
 
 COPY --chown=node:node .env .
 
-RUN npm install -y
-
-RUN node setup.mjs
-
-RUN npm run migration:run
-
-RUN npm run build
+RUN npm install -y && \ 
+    node setup.mjs && \ 
+    npm run migration:run && \ 
+    npm run build && \ 
+    npm cache clean --force
 
 EXPOSE 8080
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start:prod"]
