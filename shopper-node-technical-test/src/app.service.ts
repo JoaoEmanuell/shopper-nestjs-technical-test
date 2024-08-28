@@ -70,6 +70,7 @@ export class AppService {
       // save the image in server
       await sharp(Buffer.from(body['image'], 'base64')).toFile(imagePath);
     } catch (err) {
+      console.log(err);
       // if error to save image
       throw new BadRequestException({
         error_code: 'INVALID_DATA',

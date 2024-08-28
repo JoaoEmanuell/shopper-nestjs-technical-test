@@ -7,7 +7,7 @@ const config = {
   database: './src/database/db.sqlite',
   entities: [Measure],
   autoLoadEntities: true,
-  migrations: ['./src/migrations/*.ts'],
+  migrations: ['./dist/migrations/*{.js,.ts}'],
   migrationsRun: true,
   synchronize: false,
 };

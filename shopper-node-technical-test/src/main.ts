@@ -7,6 +7,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { json } from 'express';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -37,4 +38,18 @@ async function bootstrap() {
 
   await app.listen(8080);
 }
+// setup
+const databasePath = './src/database';
+const imagesPath = './src/database/images';
+
+if (!existsSync(databasePath)) {
+  mkdirSync(databasePath); // create the database dir if not exists
+}
+if (!existsSync(imagesPath)) {
+  mkdirSync(imagesPath); // create the tmp dir if not exists
+}
+if (!existsSync(`${databasePath}/db.sqlite`)) {
+  writeFileSync(`${databasePath}/db.sqlite`, ''); // create a empty db file
+}
+
 bootstrap();
