@@ -1,0 +1,179 @@
+openapi: 3.0.0
+paths:
+  /upload:
+    post:
+      operationId: AppController_uploadPhoto
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadDto'
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                example:
+                  image_url: url to image saved in api
+                  measure_value: measurement value extracted from the image
+                  measure_uuid: uuid generated for measure
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_code:
+                    type: string
+                  error_description:
+                    type: string
+              examples:
+                example1:
+                  summary: Invalid Data - Base64 Error
+                  value:
+                    error_code: INVALID_DATA
+                    error_description: Image is not a base64 encoded
+                example2:
+                  summary: Invalid Data - Image Error
+                  value:
+                    error_code: INVALID_DATA
+                    error_description: Invalid image
+                example3:
+                  summary: Invalid type - Measure type is not 'WATER' or 'GAS'
+                  value:
+                    error_code: INVALID_TYPE
+                    error_description: Tipo de medição não permitida
+        '409':
+          description: Conflict to upload a measure
+          content:
+            application/json:
+              schema:
+                example:
+                  error_code: DOUBLE_REPORT
+                  error_description: Leitura do mês já realizada
+  /confirm:
+    patch:
+      operationId: AppController_confirm
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmDto'
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                example:
+                  success: true
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                example:
+                  error_code: MEASURES_NOT_FOUND
+                  error_description: Leitura do mês já realizada
+        '409':
+          description: Conflict to confirm measure
+          content:
+            application/json:
+              schema:
+                example:
+                  error_code: DOUBLE_REPORT
+                  error_description: Leitura do mês já realizada
+  /{customer_code}/list:
+    get:
+      operationId: AppController_listCustomer
+      parameters:
+        - name: measure_type
+          required: true
+          in: query
+          schema:
+            nullable: false
+            type: string
+        - name: customer_code
+          required: true
+          in: path
+          description: code of customer
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                example:
+                  customer_code: string with customer code
+                  measures:
+                    - measure_uuid: string
+                      measure_datetime: datetime
+                      measure_type: string
+                      has_confirmed: boolean
+                      image_url: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                example:
+                  error_code: INVALID_TYPE
+                  error_description: Tipo de medição não permitida
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                example:
+                  error_code: MEASURES_NOT_FOUND
+                  error_description: Nenhuma leitura encontrada
+info:
+  title: Shopper node technical test API
+  description: Api for shopper node technical test
+  version: '1.0'
+  contact: {}
+tags: []
+servers: []
+components:
+  schemas:
+    UploadDto:
+      type: object
+      properties:
+        image:
+          type: string
+          nullable: false
+        customer_code:
+          type: string
+          nullable: false
+        measure_datetime:
+          format: date-time
+          type: string
+          nullable: false
+        measure_type:
+          type: string
+          nullable: false
+      required:
+        - image
+        - customer_code
+        - measure_datetime
+        - measure_type
+    ConfirmDto:
+      type: object
+      properties:
+        measure_uuid:
+          type: string
+          nullable: false
+        confirmed_value:
+          type: number
+          nullable: false
+      required:
+        - measure_uuid
+        - confirmed_value
