@@ -8,7 +8,7 @@
 
 [Português Brasil](./README-pt_br.md)
 
-# Shopper Node Technical Test
+# Shopper NestJs Technical Test
 
 Technical test for the Junior Full-Stack Web Developer position.
 
